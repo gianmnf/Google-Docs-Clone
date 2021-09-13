@@ -23,7 +23,7 @@ export default function TextEditor() {
     const [quill, setQuill] = useState()
 
     useEffect(() => {
-        const s = io('http://localhost:3001')
+        const s = io('http://localhost:3000', { query: { uid: 1 } })
         setSocket(s)
 
         return () => {
@@ -37,6 +37,10 @@ export default function TextEditor() {
         socket.once('load-document', document => {
             quill.setContents(document)
             quill.enable()
+        })
+
+        socket.once('newOccurrence', data => {
+            console.log(data)
         })
 
         socket.emit('get-document', documentId)
@@ -75,6 +79,8 @@ export default function TextEditor() {
             quill.updateContents(delta)
         }
         socket.on('receive-changes', handler)
+
+
 
         return () => {
             socket.off('receive-changes', handler)
